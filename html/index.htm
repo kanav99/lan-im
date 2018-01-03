@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Instant Messenger</title>
+	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="stylesheet" href="/css/bootstrap.min.css">
+  	<script src="/js/jquery.min.js"></script>
+  	<script src="/js/popper.min.js"></script>
+  	<script src="/js/bootstrap.min.js"></script>
+  	<script type="text/javascript" src="/user.JSON"></script>
+</head>
+<body>
+	<div class='container-fluid jumbotron'>
+		<h1>LAN IM</h1>
+		<h5>The free messaging app</h5> 
+	</div>
+	<div class='row'>
+		<div class="col-sm-1"></div>
+		<div class='col-sm-4'>
+			<h3  style="text-align: center;">Login</h3>
+			<form action="/chat" method="post">
+				<div class='form-group' >
+					<label for="username">Username:</label>
+  					<input type="text" class="form-control" name="username">
+				</div>
+				<div class='form-group'>
+					<label for="pwd">Password:</label>
+  					<input type="password" class="form-control" name="pwd">
+				</div>
+				<label>Remember me <input type="checkbox" name="remember"></label><br>
+				<button class='btn'>Log in</button>
+			</form>
+		</div>
+		<div class="col-sm-2"></div>
+		<div class='col-sm-4'>
+			<h3 style="text-align: center;">New User? Sign up!</h3>
+			<form action="/profile" method="post">
+				<div class='form-group'>
+					<label for='nick'>Nickname:</label>
+					<input type="text" name="nick" class="form-control">
+				</div>
+				<div class='form-group'>
+					<label for='username-new'>Username:</label>
+					<input type="text" name="username-new" class="form-control">
+				</div>
+				<div class='form-group'>
+					<label for='pwd-new'>Password:</label>
+					<input type="password" name="pwd-new" class="form-control">
+				</div>
+				<button class="btn">Sign Up</button>
+				
+			</form>
+		</div>
+		<div class="col-sm-1"></div>
+	</div>
+  
+</body>
+</html>

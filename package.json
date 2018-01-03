@@ -1,0 +1,26 @@
+{
+  "name": "lan-im",
+  "version": "1.0.0",
+  "description": "Instant Messenger for LAN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kanav99/lan-im.git"
+  },
+  "keywords": [
+    "im"
+  ],
+  "author": "Kanav Gupta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kanav99/lan-im/issues"
+  },
+  "homepage": "https://github.com/kanav99/lan-im#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
+  }
+}
