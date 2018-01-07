@@ -25,25 +25,28 @@ app.post('/chat' , function ( req , res ){
 	{
 		var creds = JSON.parse(fs.readFileSync('users/' + req.body.username + '.json', 'utf8'));
 		if(creds.pwd == req.body.pwd) {
-			res.cookie('username', req.body.username );
+			if(req.body.remember == 'on')
+				res.cookie('username', req.body.username , {maxAge : 31536000000});
+			else
+				res.cookie('username', req.body.username);
 			res.sendFile( __dirname + '/html/chatroom.htm');
 		}
 		else
-			res.redirect('/');
+			res.redirect('/?valid=no');
 	}
 	else {
-		res.redirect('/');
+		res.redirect('/?valid=exist');
 	}
 });
 
 app.post('/profile' , function ( req , res ){
 	if(fs.existsSync('users/' + req.body.username + '.json'))
 	{
-		res.redirect('/');
+		res.redirect('/?valid=nousername');
 	}
 	else {
 		fs.writeFile('users/' + req.body.username + '.json' , JSON.stringify(req.body) );
-		res.redirect('/chat');
+		res.redirect('/?valid=loginagain');
 	}
 })
 app.get('/chat', function( req, res){
@@ -51,11 +54,29 @@ app.get('/chat', function( req, res){
 })
 
 io.on('connection' , function(socket){
-	console.log('new user');
+	var current_username;
+	console.log('connection!');
 	socket.on('newUser', function(msg){
+		current_username = msg;
 		var data = JSON.parse(fs.readFileSync('users/' + msg + '.json', 'utf8'))
 		socket.emit('yourInfo' , data);
-		console.log('data sent');
+		console.log(msg + ' connected!');
+	});
+	socket.on('newFriendRequest', function(friendRequest){
+		console.log('New friendRequest from ' + friendRequest.from + ' to '+ friendRequest.to);
+		fs.readFile('users/' + friendRequest.to + '.json', function( err, data){
+			var userTo = JSON.parse(data);
+			if(userTo.pendingRequests == undefined)
+				userTo.pendingRequests = [];
+			userTo.pendingRequests.push(friendRequest.from);
+			fs.writeFile('users/' + friendRequest.to + '.json' , JSON.stringify(userTo));
+		});
+	});
+	socket.on('toserver', function(msgObj) {
+		console.log("New Message from " + msgObj.from + ' to '+ msgObj.to + ':' + msgObj.msg);
+	});
+	socket.on('disconnect' , function(){
+		console.log(current_username + ' disconnected!');
 	})
 });
 

@@ -14,6 +14,17 @@
   			window.location ="/chat";
   		}
   	</script>
+  	<script type="text/javascript" src="/js/findGetParameter.js"></script>
+  	<script type="text/javascript">
+  		if(findGetParameter('valid')=='no')
+  			alert('Invalid Password!');
+  		else if(findGetParameter('valid')=='exist')
+  			alert('User doesn\'t exist! Register ');
+  		else if (findGetParameter('valid')=='nousername')
+  			alert('Username taken. Choose another username');
+  		else if (findGetParameter('valid')=='loginagain')
+  			alert('Register successful! Please login')
+  	</script>
 </head>
 <body>
 	<div class='container-fluid jumbotron'>
