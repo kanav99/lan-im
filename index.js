@@ -16,6 +16,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(upload.array());
 app.use(cookieParser());
 
+if(!fs.existsSync('./users'))
+{
+	fs.mkdirSync('./users');
+}
+if(!fs.existsSync('./msg'))
+{
+	fs.mkdirSync('./msg');
+}
 app.get('/' , function ( req , res ){
 	res.sendFile( __dirname + '/html/index.htm');
 });
@@ -46,6 +54,7 @@ app.post('/profile' , function ( req , res ){
 	}
 	else {
 		fs.writeFile('users/' + req.body.username + '.json' , JSON.stringify(req.body) );
+		fs.mkdirSync('./msg/'+ req.body.username);
 		res.redirect('/?valid=loginagain');
 	}
 })
@@ -109,7 +118,41 @@ io.on('connection' , function(socket){
 		
 	});
 	socket.on('toserver', function(msgObj) {
-		console.log("New Message from " + msgObj.from + ' to '+ msgObj.to + ':' + msgObj.msg);
+		console.log("New Message from " + current_username + ' to '+ msgObj.to + ':' + msgObj.msg);
+		if(fs.existsSync('msg/'+current_username+'/'+msgObj.to+'.json'))
+		{
+			fs.readFile('msg/'+current_username+'/'+msgObj.to+'.json', function(err,str){
+				var db1 = JSON.parse(str);
+				db1.msgdb.push({ type:'out',msg:msgObj.msg});
+				fs.writeFile('msg/'+current_username+'/'+msgObj.to+'.json',JSON.stringify(db1));
+			})
+		}
+		else{
+			var db1 ={};
+			db1.msgdb = [{ type:'out',msg:msgObj.msg}];
+			fs.writeFile('msg/'+current_username+'/'+msgObj.to+'.json',JSON.stringify(db1));
+		}
+		if(fs.existsSync('msg/'+msgObj.to+'/'+current_username+'.json'))
+		{
+			fs.readFile('msg/'+msgObj.to+'/'+current_username+'.json', function(err,str){
+				var db1 = JSON.parse(str);
+				db1.msgdb.push({ type:'in',msg:msgObj.msg});
+				fs.writeFile('msg/'+msgObj.to+'/'+current_username+'.json',JSON.stringify(db1));
+				var idx = online_users.findIndex( x => x.username === msgObj.to);
+				if(idx!=-1){
+					online_users[idx].sock.emit('newMessage',{ from:current_username,msg:msgObj.msg})
+				}
+			})
+		}
+		else{
+			var db1 ={};
+			db1.msgdb = [{ type:'in',msg:msgObj.msg}];
+			fs.writeFile('msg/'+msgObj.to+'/'+current_username+'.json',JSON.stringify(db1));
+			var idx = online_users.findIndex( x => x.username === msgObj.to);
+			if(idx!=-1){
+				online_users[idx].sock.emit('newMessage',{ from:current_username,msg:msgObj.msg})
+			}
+		}
 	});
 	socket.on('acceptRequest',function(user){
 		fs.readFile('users/'+current_username + '.json', function(err,str){
@@ -138,7 +181,19 @@ io.on('connection' , function(socket){
 			data.pendingRequests.splice(data.pendingRequests.indexOf(msg),1);
 			fs.writeFile('users/'+current_username + '.json',JSON.stringify(data));
 		})
-	})
+	});
+	socket.on('requestMessages', function(user){
+		if(fs.existsSync('msg/'+current_username+'/'+user+'.json')){
+			fs.readFile('msg/'+current_username+'/'+user+'.json', function(err,str){
+				var msg = JSON.parse(str);
+				socket.emit('yeLeMsg',msg);
+			})
+		}
+		else{
+			socket.emit('yeLeMsg',-1);
+		}
+		
+	});
 	socket.on('disconnect' , function(){
 		console.log(current_username + ' disconnected!');
 		var idx = online_users.findIndex( x => x.username === current_username);
