@@ -22,12 +22,10 @@ socket.on('yourInfo', function(msg){
 	{
 		yourInfo.pendingRequests = [];
 	}
-	document.getElementById('friendlist').innerHTML +='<span style="position:fixed;right:0" width="100%">';
 	for(i=0; i<yourInfo.pendingRequests.length;i++)
 	{
-		document.getElementById('friendlist').innerHTML += ('<li class="list-group-item text-left">'+yourInfo.pendingRequests[i]+'<button class="btn btn-xs btn-success" style="right:0;">Accept</button><button class="btn btn-danger" style="right:0;">Decline</button></li>');
+		document.getElementById('friendlist').innerHTML += ('<li class="list-group-item text-left" id="request-'+yourInfo.pendingRequests[i]+'">'+yourInfo.pendingRequests[i]+'<div class="btn-group btn-group-xs" style="float:right;"><button class="btn btn-primary" onclick=acceptRequest("'+yourInfo.pendingRequests[i]+'")>Accept</button><button class="btn">Decline</button></div></li>');
 	}
-	document.getElementById('friendlist').innerHTML += '</span>';
 });
 
 $('#msging').submit(function(){
@@ -58,6 +56,15 @@ $('#addFriend').submit(function(){
 	friendRequest.to = $('#friendSearch').val();
 	socket.emit('newFriendRequest', friendRequest);
 	$('#friendSearch').val('');
-	alert("Friend Request Sent!");
 	return false;
+});
+function acceptRequest(user){
+	socket.emit('acceptRequest' , user);
+	var element = document.getElementById('request-'+user);
+	element.parentNode.removeChild(element);
+	document.getElementById('friendlist').innerHTML += ('<a href="#" class="list-group-item text-left">'+user+'</a>');
+
+}
+socket.on('requestStatus', function(msg){
+	alert(msg);
 })
