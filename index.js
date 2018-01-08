@@ -53,6 +53,7 @@ app.get('/chat', function( req, res){
 	res.sendFile(__dirname + '/html/chatroom.htm');
 })
 
+var online_users = [];
 io.on('connection' , function(socket){
 	var current_username;
 	console.log('connection!');
@@ -61,6 +62,7 @@ io.on('connection' , function(socket){
 		var data = JSON.parse(fs.readFileSync('users/' + msg + '.json', 'utf8'))
 		socket.emit('yourInfo' , data);
 		console.log(msg + ' connected!');
+		online_users.push({username:current_username,sock:socket});
 	});
 	socket.on('newFriendRequest', function(friendRequest){
 		console.log('New friendRequest from ' + friendRequest.from + ' to '+ friendRequest.to);
@@ -83,6 +85,11 @@ io.on('connection' , function(socket){
 							userTo.pendingRequests.push(friendRequest.from);
 							fs.writeFile('users/' + friendRequest.to + '.json' , JSON.stringify(userTo));
 							socket.emit('requestStatus', 'Yay! Friend Request Sent!');
+							var idx = online_users.findIndex( x => x.username === friendRequest.to);
+							if(idx!=-1)
+							{
+								online_users[idx].sock.emit('incomingRequest',friendRequest.from);
+							}
 						}
 						else{
 							socket.emit('requestStatus','Invalid Request!');
@@ -119,10 +126,23 @@ io.on('connection' , function(socket){
 				data.friends=[];
 			data.friends.push(current_username);
 			fs.writeFile('users/'+user + '.json',JSON.stringify(data));
+			var idx = online_users.findIndex( x => x.username === user);
+			if(idx!=-1){
+				online_users[idx].sock.emit('requestAccepted',current_username);
+			}
 		});
+	});
+	socket.on('declineRequest', function(msg){
+		fs.readFile('users/'+current_username+'.json',function(err,str){
+			var data = JSON.parse(str);
+			data.pendingRequests.splice(data.pendingRequests.indexOf(msg),1);
+			fs.writeFile('users/'+current_username + '.json',JSON.stringify(data));
+		})
 	})
 	socket.on('disconnect' , function(){
 		console.log(current_username + ' disconnected!');
+		var idx = online_users.findIndex( x => x.username === current_username);
+		online_users.splice(idx , 1);
 	});
 });
 

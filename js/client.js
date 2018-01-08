@@ -1,6 +1,10 @@
 var activeRoom;
 var activeUser;
 var you = getCookie("username");
+if(you=='')
+{
+	window.location ="/";
+}
 var yourInfo;
 
 var socket = io.connect();
@@ -24,7 +28,7 @@ socket.on('yourInfo', function(msg){
 	}
 	for(i=0; i<yourInfo.pendingRequests.length;i++)
 	{
-		document.getElementById('friendlist').innerHTML += ('<li class="list-group-item text-left" id="request-'+yourInfo.pendingRequests[i]+'">'+yourInfo.pendingRequests[i]+'<div class="btn-group btn-group-xs" style="float:right;"><button class="btn btn-primary" onclick=acceptRequest("'+yourInfo.pendingRequests[i]+'")>Accept</button><button class="btn">Decline</button></div></li>');
+		document.getElementById('pendingfriendlist').innerHTML += ('<li class="list-group-item text-left" id="request-'+yourInfo.pendingRequests[i]+'">'+yourInfo.pendingRequests[i]+'<div class="btn-group btn-group-xs" style="float:right;"><button class="btn btn-primary" onclick=acceptRequest("'+yourInfo.pendingRequests[i]+'")>Accept</button><button class="btn" onclick=declineRequest("'+yourInfo.pendingRequests[i]+'")>Decline</button></div></li>');
 	}
 });
 
@@ -65,6 +69,26 @@ function acceptRequest(user){
 	document.getElementById('friendlist').innerHTML += ('<a href="#" class="list-group-item text-left">'+user+'</a>');
 
 }
+function declineRequest(user){
+	socket.emit('declineRequest' , user);
+	var element = document.getElementById('request-'+user);
+	element.parentNode.removeChild(element);
+	snack_alert("Friend request of "+user+" declined!");
+}
 socket.on('requestStatus', function(msg){
-	alert(msg);
+	snack_alert(msg);
+});
+function snack_alert(msg){
+	var x = document.getElementById("snackbar");
+	x.innerHTML = msg;
+	x.className = "show";
+	setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+socket.on('requestAccepted', function(msg){
+	document.getElementById('friendlist').innerHTML += ('<a href="#" class="list-group-item text-left">'+msg+'</a>');
+	snack_alert(msg + ' accepted your friend request!');
+})
+socket.on('incomingRequest',function(msg){
+	document.getElementById('pendingfriendlist').innerHTML += ('<li class="list-group-item text-left" id="request-'+msg+'">'+msg+'<div class="btn-group btn-group-xs" style="float:right;"><button class="btn btn-primary" onclick=acceptRequest("'+msg+'")>Accept</button><button class="btn" onclick=declineRequest("'+msg+'")>Decline</button></div></li>');
+	snack_alert(msg + ' sent you a friend request!');
 })

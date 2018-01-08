@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1">
   	<link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/snackbar.css">
   	<script src="/js/jquery.min.js"></script>
   	<script src="/js/popper.min.js"></script>
   	<script src="/js/bootstrap.min.js"></script>
@@ -31,23 +32,23 @@
   		</ul>
       
 	</nav>
-	<div class='row' style="height: 93vh">
+	<div class='row' style="height: 91vh">
+    <div id="snackbar"></div>
 		<div class='col-sm-3'>
-			<ul class='list-group' id="friendlist" style="overflow: scroll;height: 90%;overflow-x: hidden;width: 100%;">
+			<ul class='list-group' style="overflow: scroll;height: 90%;overflow-x: hidden;width: 100%;">
+        <div id="friendlist"></div>
+        <div id="pendingfriendlist"></div>
 			</ul>
-      <form action="" style="height: 10%;" id='addFriend'>
-        <input id="friendSearch" autocomplete="off" style="width: 60%" placeholder="Enter username to add friend" /><button class="btn" style="right: 0;width: 40%;">Send Request</button>
+      <form action="" style="height: 10%;" id='addFriend' class="form-inline">
+        <input id="friendSearch" autocomplete="off" style="width: 60%" placeholder="Enter username to add friend" class="form-control" /><button class="btn" style="right: 0;width: 40%;">Send</button>
       </form>
 		</div>
 		<div class='col-sm-9'>
 			<ul id="history" style="height: 90%; overflow: scroll; overflow-x: hidden;" class="list-group">
         <li class="list-group-item">Hello!</li>
       </ul>
-      <!--<form  style="height: 10%;" id='msging'>
-        <input autocomplete="off" id="box" style="width: 90%" placeholder="Enter the msg"><button type="submit" class="btn" id="send" style=" right: 0; width: 10%;">Send</button>
-      </form>-->
-      <form action="" style="height: 10%;" id='msging'>
-      <input id="m" autocomplete="off" style="width: 90%" placeholder="Enter the msg"/><button class="btn" style=" right: 0; width: 10%;">Send</button>
+      <form action="" style="height: 10%;" id='msging' class="form-inline">
+      <input id="m" autocomplete="off" style="width: 90%" placeholder="Enter the msg" class="form-control"/><button class="btn" style=" right: 0; width: 10%;">Send</button>
     </form>
 		</div>
 	</div>
