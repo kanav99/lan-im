@@ -8,6 +8,18 @@ var multer = require('multer');
 var upload = multer();
 var cookieParser = require('cookie-parser');
 
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/js', express.static(__dirname + '/js'));
 app.use('/img', express.static(__dirname + '/img'));
@@ -46,14 +58,22 @@ app.post('/chat' , function ( req , res ){
 		res.redirect('/?valid=exist');
 	}
 });
-
+function validateUsername(username) {
+	var usernameRegex = /^[a-zA-Z0-9]+$/;
+    return re.test(String(username));
+}
 app.post('/profile' , function ( req , res ){
-	if(fs.existsSync('users/' + req.body.username + '.json'))
+	if(!validateUsername(username))
+	{
+		res.redirect('/?valid=invalidusername');
+	}
+	else if(fs.existsSync('users/' + req.body.username + '.json'))
 	{
 		res.redirect('/?valid=nousername');
 	}
-	else {
-		fs.writeFile('users/' + req.body.username + '.json' , JSON.stringify(req.body) );
+	else 
+	{
+		fs.writeFile('users/' + escapeHtml(req.body.username) + '.json' , JSON.stringify(req.body) );
 		fs.mkdirSync('./msg/'+ req.body.username);
 		res.redirect('/?valid=loginagain');
 	}

@@ -21,6 +21,8 @@
   		else if(findGetParameter('valid')=='exist')
   			alert('User doesn\'t exist! Register ');
   		else if (findGetParameter('valid')=='nousername')
+  			alert('Username must contain A-Za-z0-9');
+  		else if (findGetParameter('valid')=='invalidusername')
   			alert('Username taken. Choose another username');
   		else if (findGetParameter('valid')=='loginagain')
   			alert('Register successful! Please login')
@@ -35,39 +37,50 @@
 	<div class='row'>
 		<div class="col-sm-1"></div>
 		<div class='col-sm-4'>
-			<h3  style="text-align: center;">Login</h3>
-			<form action="/chat" method="post">
-				<div class='form-group' >
-					<label for="username">Username:</label>
-  					<input type="text" class="form-control" name="username">
+			<div class="card">
+				<div class="card-header">
+					<h3  style="text-align: center;">Login</h3>
 				</div>
-				<div class='form-group'>
-					<label for="pwd">Password:</label>
-  					<input type="password" class="form-control" name="pwd">
+				<div class="card-body">
+					<form action="/chat" method="post">
+						<div class='form-group' >
+							<label for="username">Username:</label>
+		  					<input type="text" class="form-control" name="username">
+						</div>
+						<div class='form-group'>
+							<label for="pwd">Password:</label>
+		  					<input type="password" class="form-control" name="pwd">
+						</div>
+						<label>Remember me <input type="checkbox" name="remember"></label><br>
+						<button class='btn'>Log in</button>
+					</form>
 				</div>
-				<label>Remember me <input type="checkbox" name="remember"></label><br>
-				<button class='btn'>Log in</button>
-			</form>
+			</div>
 		</div>
 		<div class="col-sm-2"></div>
 		<div class='col-sm-4'>
-			<h3 style="text-align: center;">New User? Sign up!</h3>
-			<form action="/profile" method="post">
-				<div class='form-group'>
-					<label for='nick'>Nickname:</label>
-					<input type="text" name="nick" class="form-control">
+			<div class="card">
+				<div class="card-header">
+					<h3 style="text-align: center;">New User? Sign up!</h3>
 				</div>
-				<div class='form-group'>
-					<label for='username'>Username:</label>
-					<input type="text" name="username" class="form-control">
+				<div class="card-body">
+					<form action="/profile" method="post">
+						<div class='form-group'>
+							<label for='nick'>Nickname:</label>
+							<input type="text" name="nick" class="form-control">
+						</div>
+						<div class='form-group'>
+							<label for='username'>Username:</label>
+							<input type="text" name="username" class="form-control">
+						</div>
+						<div class='form-group'>
+							<label for='pwd'>Password:</label>
+							<input type="password" name="pwd" class="form-control">
+						</div>
+						<button class="btn">Sign Up</button>
+					</form>
 				</div>
-				<div class='form-group'>
-					<label for='pwd'>Password:</label>
-					<input type="password" name="pwd" class="form-control">
-				</div>
-				<button class="btn">Sign Up</button>
-				
-			</form>
+			</div>
 		</div>
 		<div class="col-sm-1"></div>
 	</div>
